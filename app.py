@@ -7,7 +7,7 @@ SURVEY_ANSWERS = []
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = "never-tell!"
-app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = True
+app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 
 debug = DebugToolbarExtension(app)
 
@@ -15,16 +15,15 @@ debug = DebugToolbarExtension(app)
 def display_survey():
     """ Load homepage with survey title, instructions, and survey start button """
 
-    return render_template("survey_start.html",
-    title = survey.title, instructions=survey.instructions)
+    return render_template("survey_start.html", survey=survey)
 
-@app.get('/questions/<count>')
+@app.get('/questions/<int:count>')
 def show_questions(count):
     """ Display question with answer choices as radio buttons """
 
-    session["count"] = count
-    question = survey.questions[int(count)].question
-    choices = survey.questions[int(count)].choices
+    # session["count"] = count
+    question = survey.questions[count].question
+    choices = survey.questions[count].choices
     return render_template("question.html", question = question, choices = choices)
 
 @app.post('/answer')
@@ -35,10 +34,14 @@ def get_answer():
     survey_answer = request.form["answer"]
     SURVEY_ANSWERS.append(survey_answer)
 
-    next_page = int(session["count"])+1
+    next_page = len(SURVEY_ANSWERS)
+    # next_page = session["count"]+1
 
     if next_page == len(survey.questions):
-        return render_template("completion.html")
+        return redirect('/completion')
 
     return redirect(f'/questions/{next_page}')
 
+@app.get('/completion')
+def show_completion():
+    return render_template("completion.html")
