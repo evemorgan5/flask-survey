@@ -14,13 +14,18 @@ debug = DebugToolbarExtension(app)
 @app.get('/')
 def display_survey():
     """ Load homepage with survey title, instructions, and survey start button """
-    session["responses"] = []
     return render_template("survey_start.html", survey=survey)
+
+@app.post("/begin")
+def begin_responses():
+    session["responses"] = []
+    return redirect("/questions/0")
+
 
 @app.get('/questions/<int:count>')
 def show_questions(count):
-    """ Display question with answer choices as radio buttons """
-    """ If check page number is not equal to the length of responses,
+    """ Display question with answer choices as radio buttons
+    If page number is not equal to the length of responses,
     redirect to the correct page and return flash message """
     if count != len(session["responses"]):
         flash("Trying to access an invalid question!")
@@ -54,5 +59,8 @@ def get_answer():
 @app.get('/completion')
 def show_completion():
     """ Display completion page """
+    # print(session["responses"])
+    # breakpoint()
+
     return render_template("completion.html")
 
