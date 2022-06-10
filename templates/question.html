@@ -1,9 +1,15 @@
 {% extends 'base.html' %}
 {% block content %}
 
+<!-- Add flash message -->
+{% for msg in get_flashed_messages() %}
+<p>{{ msg }}</p>
+{% endfor %}
+
   <h1>{{ question }}</h1>
 
   <form action="/answer" method="POST">
+    <!-- Create a survey answer choice, using a loop through choices-->
     {% for choice in choices %}
       <!-- you should have one item like this for every choice -->
       <p>
@@ -16,7 +22,10 @@
       {% endfor %}
 
 
+
     <button>Continue</button>
   </form>
+
+
 
 {% endblock %}
